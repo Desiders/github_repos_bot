@@ -1,4 +1,4 @@
-from typing import Any, Callable, Generator
+from typing import Any, Callable
 
 from app.infrastructure.github.schemas import Repository
 

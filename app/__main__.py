@@ -28,7 +28,7 @@ async def main():
         parse_mode=None,
         disable_web_page_preview=None,
     )
-    
+
     dp = Dispatcher(
         bot=bot,
     )

@@ -28,4 +28,3 @@ class HasText(Filter):
         if not text:
             return not self.has_text
         return self.has_text
-        
