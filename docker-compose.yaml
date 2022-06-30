@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+    bot:
+        container_name: github_preview_bot
+        build:
+            context: .
+            dockerfile: Dockerfile
+        stop_signal: SIGINT
+        restart: on-failure
+        env_file: .env
