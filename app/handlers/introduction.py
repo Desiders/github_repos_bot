@@ -1,23 +1,19 @@
 from aiogram import Dispatcher, md
 from aiogram.types import Message
-from structlog import get_logger
-from structlog.stdlib import BoundLogger
-
-logger: BoundLogger = get_logger()
 
 
 async def start_cmd(m: Message):
     await m.answer(
         "Hello, {first_name}!\n\n"
-        "I'm helps you find the repositories!\n\n"
-        "{search_pattern}\n"
-        "args (main, other see by link):\n"
+        "I help you find the repositories!\n\n"
+        "{search_patterns}\n"
+        "Main arguments, others see the link:\n"
         "\t- <b>user:&lt;username&gt;</b>\n"
         "\t- <b>language:&lt;language&gt;</b>\n"
         "\t- <b>order:asc|desc</b>\n"
         "\t- <b>sort:stars|forks|updated</b>\n"
         "\t- <b>&lt;text&gt; in:name|description|topics|readme</b>\n"
-        "\t- <b>forks|stars|followers|size|topics:lt;condition&gt;</b>\n\n"
+        "\t- <b>forks|stars|followers|size|topics:&lt;condition&gt;</b>\n\n"
         "Examples:\n"
         "1. <code>get_anime_bot user:Desiders</code>\n"
         "2. <code>anime sort:stars order:desc language:Python</code>\n"
@@ -29,8 +25,8 @@ async def start_cmd(m: Message):
         "7. <code>python baby</code>"
         .format(
             first_name=md.quote_html(m.from_user.first_name),
-            search_pattern=md.hlink(
-                title="Search pattern",
+            search_patterns=md.hlink(
+                title="Search patterns",
                 url=(
                     "https://docs.github.com/en/search-github/"
                     "searching-on-github/searching-for-repositories"
@@ -46,7 +42,7 @@ async def start_cmd(m: Message):
 async def source_cmd(m: Message):
     await m.answer(
         text=(
-            "Bot has open source code!\n\n"
+            "The bot has an open source code!\n\n"
             "Source: {link}"
         ).format(
             link=(
@@ -54,6 +50,9 @@ async def source_cmd(m: Message):
                 "github_repos_bot"
             ),
         ),
+        parse_mode=None,
+        disable_web_page_preview=False,
+        disable_notification=False,
     )
 
 

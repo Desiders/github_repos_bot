@@ -1,5 +1,3 @@
-from contextlib import suppress
-
 from aiogram import Dispatcher, md
 from aiogram.types import (InlineQuery, InlineQueryResultArticle,
                            InputTextMessageContent, Message)
@@ -38,12 +36,12 @@ async def search_repositories_cmd(m: Message, github: GitHub):
         repositories = await github.search_repositories(text, **keywords)
     except ClientError as e:
         logger.warning(
-            "Failed to search repositories",
+            "Failed to found repositories",
             error=e, query=query,
             text=text, keywords=keywords,
         )
         await wait_m.edit_text(
-            "Failed to search repositories :(",
+            "Failed to found repositories:(",
             parse_mode=None,
             disable_web_page_preview=True,
         )
@@ -53,13 +51,13 @@ async def search_repositories_cmd(m: Message, github: GitHub):
 
     if repositories_len == 0:
         logger.info(
-            "No repositories found",
+            "Repositories not found",
             query=query, text=text,
             keywords=keywords,
             repositories=repositories,
         )
         await wait_m.edit_text(
-            "No repositories found :(",
+            "Repositories not found :(",
             parse_mode=None,
             disable_web_page_preview=True,
         )
@@ -99,18 +97,13 @@ async def search_repositories_query(q: InlineQuery, github: GitHub):
             is_personal=False,
         )
         return
-    logger.info(
-        "Searching repositories",
-        query_len=len(query),
-        query=query,
-    )
 
     text, keywords = get_text(query), get_keywoards(query)
     try:
         repositories = await github.search_repositories(text, **keywords)
     except ClientError as e:
         logger.warning(
-            "Failed to search repositories",
+            "Failed to found repositories",
             query=query, text=text,
             keywords=keywords,
             error=e,
@@ -119,9 +112,9 @@ async def search_repositories_query(q: InlineQuery, github: GitHub):
             results=[
                 InlineQueryResultArticle(
                     id="failed_to_search_repositories",
-                    title="Failed to search repositories :(",
+                    title="Failed to found repositories :(",
                     input_message_content=InputTextMessageContent(
-                        "Failed to search repositories :(",
+                        "Failed to found repositories :(",
                         parse_mode=None,
                         disable_web_page_preview=True,
                     ),
@@ -136,7 +129,7 @@ async def search_repositories_query(q: InlineQuery, github: GitHub):
 
     if repositories_len == 0:
         logger.info(
-            "No repositories found",
+            "Repositories not found",
             query=query, text=text,
             keywords=keywords,
             repositories=repositories,
@@ -145,9 +138,9 @@ async def search_repositories_query(q: InlineQuery, github: GitHub):
             results=[
                 InlineQueryResultArticle(
                     id="no_repositories_found",
-                    title="No repositories found :(",
+                    title="Repositories not found :(",
                     input_message_content=InputTextMessageContent(
-                        "No repositories found :(",
+                        "Repositories not found :(",
                         parse_mode=None,
                         disable_web_page_preview=True,
                     ),
@@ -159,31 +152,30 @@ async def search_repositories_query(q: InlineQuery, github: GitHub):
         return
 
     results = []
-    with suppress(StopIteration):
-        for index, repository in enumerate(repositories, start=1):
-            if description := repository.description:
-                repository.description = cut_description(
-                    description, max_length=200,
-                )
-
-            results.append(
-                InlineQueryResultArticle(
-                    id=repository.id,
-                    title=repository.full_name,
-                    input_message_content=InputTextMessageContent(
-                        repository_to_text(
-                            repository,
-                            quoter=md.quote_html,
-                        ),
-                        parse_mode="HTML",
-                        disable_web_page_preview=False,
-                    ),
-                    description=repository.description,
-                    thumb_url=repository.owner.avatar_url,
-                )
+    for index, repository in enumerate(repositories, start=1):
+        if description := repository.description:
+            repository.description = cut_description(
+                description, max_length=200,
             )
-            if index >= 50:
-                break
+
+        results.append(
+            InlineQueryResultArticle(
+                id=repository.id,
+                title=repository.full_name,
+                input_message_content=InputTextMessageContent(
+                    repository_to_text(
+                        repository,
+                        quoter=md.quote_html,
+                    ),
+                    parse_mode="HTML",
+                    disable_web_page_preview=False,
+                ),
+                description=repository.description,
+                thumb_url=repository.owner.avatar_url,
+            )
+        )
+        if index >= 50:
+            break
 
     await q.answer(
         results,

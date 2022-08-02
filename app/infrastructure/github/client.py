@@ -1,12 +1,8 @@
 from typing import Optional
 
 from aiohttp import ClientSession, ClientTimeout
-from structlog import get_logger
-from structlog.stdlib import BoundLogger
 
 from .schemas import Repository
-
-logger: BoundLogger = get_logger()
 
 
 class GitHub:
