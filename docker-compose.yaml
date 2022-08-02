@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
     bot:
+        image: github_repos_bot
         container_name: github_repos_bot
         build:
             context: .
